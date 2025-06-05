@@ -1,10 +1,11 @@
-use diesel::prelude::*;
-use diesel_async::RunQueryDsl;
+use diesel::{insert_into, prelude::*, result};
+use diesel_async::scoped_futures::ScopedFutureExt;
+use diesel_async::{AsyncConnection, RunQueryDsl};
 
 use crate::data::database::*;
 use crate::models::product_model::*;
 
-pub async fn get_products() -> Vec<Products> {
+pub async fn get_products() -> Vec<Product> {
     use crate::models::schema::products::dsl::*;
 
     let conn = connect_from_pool().await;
@@ -15,7 +16,7 @@ pub async fn get_products() -> Vec<Products> {
     };
 
     let res = products
-        .select(Products::as_select())
+        .select(Product::as_select())
         .load(&mut conn)
         .await;
 
@@ -23,4 +24,31 @@ pub async fn get_products() -> Vec<Products> {
         Ok(value) => value,
         Err(_) => panic!("Failed to fetch products"),
     };
+}
+
+pub async fn add_product<'a>(new_product: NewProduct<'a>) {
+    use crate::models::schema::products;
+
+    let pool_conn = connect_from_pool().await;
+
+    let mut conn = match pool_conn {
+        Ok(value) => value,
+        Err(_) => panic!("Failed to connect from pool"),
+    };
+
+    conn.transaction::<_, result::Error, _>(|connection|
+        async move {
+            insert_into(products::table)
+                .values(&new_product)
+                .execute(connection)
+                .await?;
+
+            products::table
+                .order(products::product_id.desc())
+                .select(Product::as_select())
+                .first(connection)
+                .await?;
+            Ok(())
+    }.scope_boxed()).await
+    .expect("Transaction failed");
 }

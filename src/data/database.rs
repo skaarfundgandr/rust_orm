@@ -1,4 +1,12 @@
-use diesel_async::{ pooled_connection::{deadpool::{Object, Pool, PoolError}, AsyncDieselConnectionManager}, AsyncConnection, AsyncMysqlConnection };
+use diesel_async:: {
+    pooled_connection:: {
+        deadpool:: { 
+            Object, Pool, PoolError 
+        },
+        AsyncDieselConnectionManager
+    },
+    AsyncConnection, AsyncMysqlConnection
+};
 use dotenvy::dotenv;
 use once_cell::sync::Lazy;
 use std::env;
