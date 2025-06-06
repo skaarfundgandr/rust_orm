@@ -1,8 +1,8 @@
-use rust_orm::services::product_service::get_products;
+use rust_orm::services::product_service::get_all_products;
 
 #[tokio::main]
 async fn main() {
-    let products = get_products().await;
+    let products = get_all_products().await;
 
     println!("Displaying {} products", products.len());
 
