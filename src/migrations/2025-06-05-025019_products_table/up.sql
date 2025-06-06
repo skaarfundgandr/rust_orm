@@ -1,6 +1,6 @@
 -- Your SQL goes here
 CREATE TABLE `products` (
-    `product_id` INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
+    `product_id` INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     `product_name` VARCHAR(50) NOT NULL,
     `product_desc` TEXT,
     `product_category` TEXT NOT NULL,

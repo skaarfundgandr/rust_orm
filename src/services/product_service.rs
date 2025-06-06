@@ -4,6 +4,7 @@ use diesel_async::{AsyncConnection, RunQueryDsl};
 
 use crate::data::database::*;
 use crate::models::product_model::*;
+use crate::models::schema::products;
 
 pub async fn get_products() -> Vec<Product> {
     use crate::models::schema::products::dsl::*;
@@ -27,8 +28,6 @@ pub async fn get_products() -> Vec<Product> {
 }
 
 pub async fn add_product<'a>(new_product: NewProduct<'a>) {
-    use crate::models::schema::products;
-
     let pool_conn = connect_from_pool().await;
 
     let mut conn = match pool_conn {
@@ -51,4 +50,27 @@ pub async fn add_product<'a>(new_product: NewProduct<'a>) {
             Ok(())
     }.scope_boxed()).await
     .expect("Transaction failed");
+}
+
+pub async fn update_product<'a>(id: i32, update_form: ProductForm<'a>) {
+    use crate::models::schema::products::dsl::*;
+    
+    let pool_conn = connect_from_pool().await;
+
+    let mut conn = match pool_conn {
+        Ok(value) => value,
+        Err(_) => panic!("Failed to connect from pool"),
+    };
+
+    conn.transaction::<_, result::Error, _>(|connection|
+        async move {
+            diesel::update(products.find(id))
+                .set(&update_form)
+                .execute(connection)
+                .await?;
+            Ok(())
+        }
+        .scope_boxed()
+    ).await
+    .expect("Error updating product")
 }
