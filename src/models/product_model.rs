@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use crate::models::schema::*;
 
-#[derive(Queryable, Selectable, Identifiable)]
+#[derive(Queryable, Selectable, Identifiable, PartialEq)]
 #[diesel(table_name = products)]
 #[diesel(primary_key(product_id))]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
@@ -22,6 +22,7 @@ pub struct NewProduct<'a> {
     pub product_category: &'a str,
     pub product_price: &'a f32,
 }
+
 #[derive(AsChangeset)]
 #[diesel(table_name = products)]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
