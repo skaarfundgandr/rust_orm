@@ -72,8 +72,6 @@ pub async fn add_product<'a>(new_product: NewProduct<'a>) {
 }
 
 pub async fn update_product<'a>(id: i32, update_form: ProductForm<'a>) {
-    
-
     let pool_conn = connect_from_pool().await;
 
     let mut conn = match pool_conn {
