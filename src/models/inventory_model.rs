@@ -19,3 +19,11 @@ pub struct NewInventory<'a> {
     pub product_id: &'a i32,
     pub quantity: &'a i32,
 }
+
+#[derive(AsChangeset)]
+#[diesel(table_name = inventory)]
+#[diesel(check_for_backend(diesel::mysql::Mysql))]
+pub struct InventoryForm<'a> {
+    pub product_id: Option<&'a i32>,
+    pub quantity: Option<&'a i32>,
+}
