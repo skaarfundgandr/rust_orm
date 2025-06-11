@@ -54,4 +54,5 @@ mod tests {
 
         assert!(all_products.len() == 0);
     }
+    // TODO: Write test for inventory_service
 }
