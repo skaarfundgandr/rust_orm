@@ -60,3 +60,63 @@ pub async fn add_inventory<'a>(new_inventory: NewInventory<'a>) {
         Err(e) => panic!("Database error on adding product to inventory: {e}"),
     };
 }
+
+pub async fn update_inventory<'a>(id: i32, inventory_form: InventoryForm<'a>) {
+    use crate::models::schema::inventory::dsl::*;
+
+    let pool_conn = connect_from_pool().await;
+
+    let mut conn = match pool_conn {
+        Ok(value) => value,
+        Err(e) => panic!("Error connecting to pool: {e}"),
+    };
+
+    match conn.transaction::<_, result::Error, _>(|connection|
+        async move {
+            let rows_affected: usize = diesel::update(inventory.find(id))
+                .set(inventory_form)
+                .execute(connection)
+                .await?;
+
+            if rows_affected == 0 {
+                return Err(result::Error::NotFound);
+            }
+
+            Ok(())
+        }
+        .scope_boxed()
+    ).await {
+        Ok(_) => {},
+        Err(result::Error::NotFound) => println!("Inventory {id} not found"),
+        Err(e) => panic!("Database error when updating inventory: {e}"),
+    };
+}
+
+pub async fn remove_inventory(id: i32) {
+    use crate::models::schema::inventory::dsl::*;
+
+    let pool_conn = connect_from_pool().await;
+
+    let mut conn = match pool_conn {
+        Ok(value) => value,
+        Err(e) => panic!("Error connecting to pool: {e}"),
+    };
+
+    match conn.transaction::<_, result::Error, _>(|connection|
+        async move {
+            let rows_affected: usize = diesel::delete(inventory.find(id))
+                .execute(connection)
+                .await?;
+
+            if rows_affected == 0 {
+                return Err(result::Error::NotFound);
+            }
+
+            Ok(())
+        }.scope_boxed()
+    ).await {
+        Ok(_) => {},
+        Err(result::Error::NotFound) => println!("Inventory {id} not found"),
+        Err(e) => panic!("Database error when removing inventory: {e}"),
+    };
+}
