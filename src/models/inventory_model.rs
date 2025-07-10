@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use crate::models::{product_model::Product, schema::*};
 
-#[derive(Queryable, Identifiable, Selectable, Associations, PartialEq)]
+#[derive(Queryable, Identifiable, Selectable, Associations, PartialEq, Debug)]
 #[diesel(belongs_to(Product, foreign_key = product_id))]
 #[diesel(table_name = inventory)]
 #[diesel(primary_key(inventory_id))]
