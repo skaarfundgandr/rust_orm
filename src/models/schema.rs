@@ -19,9 +19,20 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    restock_history (restock_id) {
+        restock_id -> Integer,
+        inventory_id -> Integer,
+        quantity -> Integer,
+        datetime -> Datetime,
+    }
+}
+
 diesel::joinable!(inventory -> products (product_id));
+diesel::joinable!(restock_history -> inventory (inventory_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     inventory,
     products,
+    restock_history,
 );
