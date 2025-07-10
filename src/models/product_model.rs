@@ -1,7 +1,7 @@
 use diesel::prelude::*;
 use crate::models::schema::*;
 
-#[derive(Queryable, Selectable, Identifiable, PartialEq)]
+#[derive(Queryable, Selectable, Identifiable, PartialEq, Debug)]
 #[diesel(table_name = products)]
 #[diesel(primary_key(product_id))]
 #[diesel(check_for_backend(diesel::mysql::Mysql))]
