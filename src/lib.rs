@@ -23,6 +23,7 @@ mod tests {
         println!("Test passed")
     }
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_product_service() {
         use models::product_model::*;
         use services::product_service::*;
@@ -68,8 +69,9 @@ mod tests {
         assert!(all_products.len() == 0);
         println!("Test passed!");
     }
-    // TODO: finish this test
+
     #[tokio::test]
+    #[serial_test::serial]
     async fn test_inventory_service() {
         use crate::models::product_model::*;
         use crate::models::inventory_model::*;
